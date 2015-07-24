@@ -1,0 +1,5 @@
+celery==3.1.18
+Flask==0.10.1
+Flask-RESTful==0.3.4
+redis==2.10.3
+selenium==2.46.0
