@@ -9,7 +9,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_DISABLE_RATE_LIMITS = True
 # CELERY_ALWAYS_EAGER = True
 
-PROJECT_PATH = os.path.dirname(__file__)
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 RESULTS_FOLDER = os.path.join(PROJECT_PATH, 'results')
 FIREFOX_LOCATION = os.path.join(PROJECT_PATH, 'bin', 'firefox')
 DEBUG = True
