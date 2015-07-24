@@ -1,3 +1,4 @@
 *.pyc
 screenshots/
 .idea/
+bin/

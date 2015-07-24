@@ -1,16 +1,26 @@
 # -*- coding: utf8 -*-
 from celery import Task
+from pyvirtualdisplay import Display
 from selenium import webdriver
+
+import settings
 
 
 class SeleniumTask(Task):
+
     abstract = True
-    cached_browser = None
+    cached_browser = display = None
 
     @property
     def browser(self):
+        if not self.display:
+            self.display = Display(visible=0, size=(1280, 1024))
+            self.display.start()
+
         if self.cached_browser is None:
-            self.cached_browser = webdriver.Firefox()
+            profile = webdriver.FirefoxProfile()
+            profile.set_preference('webdriver.firefox.bin', settings.FIREFOX_LOCATION)
+            self.cached_browser = webdriver.Firefox(profile)
         return self.cached_browser
 
     def remove_element_by_id(self, element_id):

@@ -3,3 +3,4 @@ Flask==0.10.1
 Flask-RESTful==0.3.4
 redis==2.10.3
 selenium==2.46.0
+PyVirtualDisplay==0.1.5

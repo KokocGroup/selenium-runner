@@ -18,7 +18,7 @@ class GAScreenMaker(SeleniumTask):
 
     @property
     def result_dir(self):
-        return os.path.join(settings.FILES_FOLDER, self.request.id)
+        return os.path.join(settings.RESULTS_FOLDER, self.request.id)
 
     def select_comparison(self, comparison_type):
         compare_select_element = self.browser.find_element_by_class_name('ID-datecontrol-compare-shortcuts')
@@ -65,14 +65,14 @@ class GAScreenMaker(SeleniumTask):
         self.select_comparison('previousperiod')
         self.browser.set_window_size(1250, 875)
         time.sleep(3)
-        self.browser.save_screenshot(os.path.join(self.result_dir, 'prev_month.png'))
+        self.browser.save_screenshot(os.path.join(self.result_dir, 'month_comparison.png'))
 
         # меняем сравнение графиков на год
         self.browser.find_element_by_class_name('_GAJZ').click()
         self.select_comparison('previousyear')
         self.browser.set_window_size(1250, 875)
         time.sleep(3)
-        self.browser.save_screenshot(os.path.join(self.result_dir, 'prev_year.png'))
+        self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
 
 
 def get_ga_date(d):

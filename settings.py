@@ -10,5 +10,6 @@ CELERY_DISABLE_RATE_LIMITS = True
 # CELERY_ALWAYS_EAGER = True
 
 PROJECT_PATH = os.path.dirname(__file__)
-FILES_FOLDER = os.path.join(PROJECT_PATH, 'screenshots')
+RESULTS_FOLDER = os.path.join(PROJECT_PATH, 'results')
+FIREFOX_LOCATION = os.path.join(PROJECT_PATH, 'bin', 'firefox')
 DEBUG = True
