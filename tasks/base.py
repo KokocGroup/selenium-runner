@@ -19,7 +19,7 @@ class SeleniumTask(Task):
 
         if self.cached_browser is None:
             profile = webdriver.FirefoxProfile()
-            profile.set_preference('webdriver.firefox.bin', settings.FIREFOX_LOCATION)
+            profile.set_preference('webdriver.firefox.bin', 'firefox')
             self.cached_browser = webdriver.Firefox(profile)
         return self.cached_browser
 
