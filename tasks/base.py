@@ -19,14 +19,11 @@ class SeleniumTask(Task):
             self.display.start()
 
         if self.cached_browser is None:
-            proxy_address = settings.PROXY
             proxy = Proxy({
                 'proxyType': ProxyType.MANUAL,
-                'httpProxy': proxy_address,
-                'sslProxy': proxy_address
+                'httpProxy': settings.PROXY,
+                'sslProxy': settings.PROXY
             })
-            profile = webdriver.FirefoxProfile()
-            profile.set_preference('webdriver.firefox.bin', 'firefox')
             self.cached_browser = webdriver.Firefox(proxy=proxy)
         return self.cached_browser
 
