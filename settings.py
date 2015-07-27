@@ -12,4 +12,4 @@ CELERY_DISABLE_RATE_LIMITS = True
 PROXY = '46.161.16.2:8888'
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 RESULTS_FOLDER = os.path.join(PROJECT_PATH, 'results')
-DEBUG = True
+DEBUG = False
