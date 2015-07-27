@@ -4,7 +4,7 @@ from calendar import TimeEncoding, month_name
 from datetime import datetime
 
 
-def get_local_month(m, locale='ru_RU'):
+def get_local_month(m, locale='ru_RU.utf8'):
     with TimeEncoding(locale):
         return month_name[m].decode('utf8')
 
