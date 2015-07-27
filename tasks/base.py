@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from celery import Task
 from pyvirtualdisplay import Display
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium import webdriver
 
 import settings
@@ -18,9 +19,15 @@ class SeleniumTask(Task):
             self.display.start()
 
         if self.cached_browser is None:
+            proxy_address = settings.PROXY
+            proxy = Proxy({
+                'proxyType': ProxyType.MANUAL,
+                'httpProxy': proxy_address,
+                'sslProxy': proxy_address
+            })
             profile = webdriver.FirefoxProfile()
             profile.set_preference('webdriver.firefox.bin', 'firefox')
-            self.cached_browser = webdriver.Firefox(profile)
+            self.cached_browser = webdriver.Firefox(proxy=proxy)
         return self.cached_browser
 
     def remove_element_by_id(self, element_id):
