@@ -24,7 +24,9 @@ class SeleniumTask(Task):
                 'httpProxy': settings.PROXY,
                 'sslProxy': settings.PROXY
             })
-            self.cached_browser = webdriver.Firefox(proxy=proxy)
+            profile = webdriver.FirefoxProfile()
+            profile.set_preference('webdriver.firefox.bin', 'firefox')
+            self.cached_browser = webdriver.Firefox(profile, proxy=proxy)
         return self.cached_browser
 
     def remove_element_by_id(self, element_id):
