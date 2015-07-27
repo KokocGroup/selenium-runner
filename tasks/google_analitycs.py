@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
-from lib import get_local_month
+from lib.util import get_local_month
 import settings
 from tasks.base import SeleniumTask
 

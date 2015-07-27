@@ -1,10 +1,9 @@
-import base64
-import os
-
 from flask import Flask
+
 from flask_restful import reqparse, Api, Resource
 
-from lib import valid_date
+from lib.result import create_ga_screen_result
+from lib.util import valid_date
 import settings
 from tasks.google_analitycs import GAScreenMaker
 
@@ -20,14 +19,9 @@ parser.add_argument('end_date', type=valid_date, required=True)
 class Task(Resource):
     def get(self, task_uid):
         celery_result = GAScreenMaker().AsyncResult(task_uid)
-        result_path = os.path.join(settings.RESULTS_FOLDER, task_uid)
         result = None
-        if celery_result.state == 'SUCCESS' and os.path.exists(result_path):
-            result = {
-                'organic': base64.b64encode(os.path.join(result_path, 'organic.png')),
-                'month_comparison': base64.b64encode(os.path.join(result_path, 'month_comparison.png')),
-                'year_comparison': base64.b64encode(os.path.join(result_path, 'year_comparison.png'))
-            }
+        if celery_result.state == 'SUCCESS':
+            result = create_ga_screen_result(task_uid)
         return {'uid': task_uid, 'state': celery_result.state, 'result': result}
 
 class TaskList(Resource):
