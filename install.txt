@@ -1,1 +1,1 @@
-aptitude install libfontconfig libxrender1 libxcomposite1 libasound2 libdbus-glib-1-2 libgtk2.0-0
+aptitude install xvfb

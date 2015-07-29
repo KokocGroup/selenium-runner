@@ -25,7 +25,7 @@ class GAScreenMaker(SeleniumTask):
         compare_select.select_by_value(comparison_type)
         self.browser.find_element_by_class_name('ACTION-apply').click()
 
-    def run(self, login, password, start_date, end_date):
+    def run(self, login, password, counter, profile, start_date, end_date):
         os.mkdir(self.result_dir)
         self.browser.implicitly_wait(1)
         self.browser.get('https://accounts.google.com')
@@ -55,21 +55,21 @@ class GAScreenMaker(SeleniumTask):
         self.remove_elements_by_class('_GABxb')  # дата создания
         self.remove_element_by_id('ID-footerPanel')
 
-        self.browser.set_window_size(1024, 890)
+        self.browser.set_window_size(1400, 870)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'organic.png'))
 
         # меняем сравнение графиков на месяц
         self.browser.find_element_by_class_name('_GAJZ').click()
         self.browser.find_element_by_class_name('ID-date_compare_mode').click()
         self.select_comparison('previousperiod')
-        self.browser.set_window_size(1250, 875)
+        self.browser.set_window_size(1500, 890)
         time.sleep(3)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'month_comparison.png'))
 
         # меняем сравнение графиков на год
         self.browser.find_element_by_class_name('_GAJZ').click()
         self.select_comparison('previousyear')
-        self.browser.set_window_size(1250, 875)
+        self.browser.set_window_size(1500, 890)
         time.sleep(3)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
 

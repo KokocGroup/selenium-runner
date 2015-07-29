@@ -15,7 +15,7 @@ class SeleniumTask(Task):
     @property
     def browser(self):
         if not self.display:
-            self.display = Display(visible=0, size=(1280, 1024))
+            self.display = Display(visible=0, size=(1920, 1080))
             self.display.start()
 
         if self.cached_browser is None:
