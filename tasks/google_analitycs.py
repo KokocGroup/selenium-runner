@@ -86,8 +86,11 @@ class GAScreenMaker(SeleniumTask):
         self.browser.find_element_by_class_name('ACTION-apply').click()
 
         self.browser.find_element_by_class_name('ACTION-selectSegments').click()
+        time.sleep(3)
         self.browser.find_element_by_xpath("//label[text()='Все сеансы']/../div/input").click()
+        time.sleep(3)
         self.browser.find_element_by_xpath("//label[text()='{}']/../div/input".format(segment_name)).click()
+        time.sleep(3)
         self.browser.find_element_by_xpath("//div[@id='ID-reportHeader-segmentPicker']//input[@value='Применить']").click()
         time.sleep(3)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'segment.png'))
