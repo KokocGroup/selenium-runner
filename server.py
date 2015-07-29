@@ -15,6 +15,8 @@ parser.add_argument('login', required=True)
 parser.add_argument('password', required=True)
 parser.add_argument('start_date', type=valid_date, required=True)
 parser.add_argument('end_date', type=valid_date, required=True)
+parser.add_argument('counter', required=True)
+parser.add_argument('segment_name', default='seo')
 
 class Task(Resource):
     def get(self, task_uid):

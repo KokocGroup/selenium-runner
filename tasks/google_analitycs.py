@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 import os
+import re
 import time
 
 from selenium.webdriver.support import expected_conditions
@@ -25,16 +26,24 @@ class GAScreenMaker(SeleniumTask):
         compare_select.select_by_value(comparison_type)
         self.browser.find_element_by_class_name('ACTION-apply').click()
 
-    def run(self, login, password, counter, profile, start_date, end_date):
+    def run(self, login, password, counter, start_date, end_date, segment_name):
         os.mkdir(self.result_dir)
         self.browser.implicitly_wait(1)
         self.browser.get('https://accounts.google.com')
         self.browser.find_element_by_id('Email').send_keys(login + Keys.ENTER)
         self.browser.find_element_by_id('Passwd').send_keys(password + Keys.ENTER)
-        time.sleep(1)
-        self.browser.get('https://www.google.com/analytics/web/#report/acquisition-channels')
+        time.sleep(2)
+        self.browser.get('https://www.google.com/analytics/web')
         WebDriverWait(self.browser, 30).until(expected_conditions.visibility_of_element_located(
-            (By.XPATH, "//*[contains(text(), 'Organic Search')]"))).click()
+            (By.CLASS_NAME, "ID-viewList"))).click()  # режим списка
+        # заходим в нужный профиль
+        self.browser.find_element_by_xpath("//div[contains(text(), '{}')]/../div/a".format(counter)).click()
+        time.sleep(3)
+        # перейти в каналы
+        profile_url_id = re.search('/(a\d+w\d+p\d+)/$', self.browser.current_url).group(1)
+        self.browser.get('https://www.google.com/analytics/web/#report/acquisition-channels/' + profile_url_id)
+        WebDriverWait(self.browser, 30).until(expected_conditions.visibility_of_element_located(
+            (By.XPATH, "//span[contains(text(), 'Organic Search')]"))).click()
         time.sleep(3)
         self.browser.find_element_by_class_name('_GAJZ').click()  # выбор дат
         date_start_input = self.browser.find_element_by_class_name('TARGET-primary_start')
@@ -69,9 +78,19 @@ class GAScreenMaker(SeleniumTask):
         # меняем сравнение графиков на год
         self.browser.find_element_by_class_name('_GAJZ').click()
         self.select_comparison('previousyear')
-        self.browser.set_window_size(1500, 890)
         time.sleep(3)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
+
+        self.browser.find_element_by_class_name('_GAJZ').click()
+        self.browser.find_element_by_class_name('ID-date_compare_mode').click()
+        self.browser.find_element_by_class_name('ACTION-apply').click()
+
+        self.browser.find_element_by_class_name('ACTION-selectSegments').click()
+        self.browser.find_element_by_xpath("//label[text()='Все сеансы']/../div/input").click()
+        self.browser.find_element_by_xpath("//label[text()='{}']/../div/input".format(segment_name)).click()
+        self.browser.find_element_by_xpath("//div[@id='ID-reportHeader-segmentPicker']//input[@value='Применить']").click()
+        time.sleep(3)
+        self.browser.save_screenshot(os.path.join(self.result_dir, 'segment.png'))
 
 
 def get_ga_date(d):
