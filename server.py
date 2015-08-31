@@ -1,7 +1,5 @@
 from flask import Flask
-
 from flask_restful import reqparse, Api, Resource
-
 from lib.result import create_ga_screen_result
 from lib.util import valid_date
 import settings
@@ -16,7 +14,8 @@ parser.add_argument('password', required=True)
 parser.add_argument('start_date', type=valid_date, required=True)
 parser.add_argument('end_date', type=valid_date, required=True)
 parser.add_argument('counter', required=True)
-parser.add_argument('segment_name', default='seo')
+parser.add_argument('segment_name')
+
 
 class Task(Resource):
     def get(self, task_uid):
@@ -25,6 +24,7 @@ class Task(Resource):
         if celery_result.state == 'SUCCESS':
             result = create_ga_screen_result(task_uid)
         return {'uid': task_uid, 'state': celery_result.state, 'result': result}
+
 
 class TaskList(Resource):
     def post(self):

@@ -3,7 +3,6 @@ from celery import Task
 from pyvirtualdisplay import Display
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium import webdriver
-
 import settings
 
 
@@ -23,7 +22,7 @@ class SeleniumTask(Task):
                 'proxyType': ProxyType.MANUAL,
                 'httpProxy': settings.PROXY,
                 'sslProxy': settings.PROXY
-            })
+            }) if hasattr(settings, 'PROXY') and settings.PROXY is not None else None
             profile = webdriver.FirefoxProfile()
             profile.set_preference('webdriver.firefox.bin', 'firefox')
             self.cached_browser = webdriver.Firefox(profile, proxy=proxy)
