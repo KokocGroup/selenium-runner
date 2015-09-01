@@ -36,6 +36,7 @@ class GAScreenMaker(SeleniumTask):
 
     def run(self, login, password, counter, start_date, end_date, segment_name):
         os.mkdir(self.result_dir)
+        self.display = True
         self.browser.implicitly_wait(1)
         self.browser.get('https://accounts.google.com')
         self.browser.find_element_by_id('Email').send_keys(login + Keys.ENTER)
@@ -70,7 +71,7 @@ class GAScreenMaker(SeleniumTask):
         date_end_input.send_keys(get_ga_date(end_date))
         self.browser.find_element_by_class_name('ACTION-apply').click()
 
-        time.sleep(3)
+        time.sleep(6)
 
         self.remove_element_by_id('ID-newKennedyHeader')
         self.remove_element_by_id('ID-navPanelContainer')
@@ -88,13 +89,13 @@ class GAScreenMaker(SeleniumTask):
         self.browser.find_element_by_class_name('ID-date_compare_mode').click()
         self.select_comparison('previousperiod')
         self.browser.set_window_size(1500, 890)
-        time.sleep(3)
+        time.sleep(6)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'month_comparison.png'))
 
         # меняем сравнение графиков на год
         self.__activate_date_panel()
         self.select_comparison('previousyear')
-        time.sleep(3)
+        time.sleep(6)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
 
         if segment_name is not None:
@@ -114,7 +115,7 @@ class GAScreenMaker(SeleniumTask):
 
             time.sleep(3)
             self.browser.find_element_by_xpath("//div[@id='ID-reportHeader-segmentPicker']//input[@value='Применить']").click()
-            time.sleep(3)
+            time.sleep(6)
             self.browser.save_screenshot(os.path.join(self.result_dir, 'segment.png'))
 
 
