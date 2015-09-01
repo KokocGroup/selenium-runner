@@ -36,7 +36,6 @@ class GAScreenMaker(SeleniumTask):
 
     def run(self, login, password, counter, start_date, end_date, segment_name):
         os.mkdir(self.result_dir)
-        self.display = True
         self.browser.implicitly_wait(1)
         self.browser.get('https://accounts.google.com')
         self.browser.find_element_by_id('Email').send_keys(login + Keys.ENTER)
