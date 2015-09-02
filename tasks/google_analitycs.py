@@ -30,17 +30,27 @@ class GAScreenMaker(SeleniumTask):
         compare_select = Select(compare_select_element)
         compare_select.select_by_value(comparison_type)
         self.browser.find_element_by_class_name('ACTION-apply').click()
+        self.__wait_report_loading()
 
     def __activate_date_panel(self):
         self.browser.find_element_by_xpath('//div[@id="ID-reportHeader-dateControl"]//td').click()
 
+    def __wait_report_loading(self):
+        WebDriverWait(self.browser, 30).until(expected_conditions.invisibility_of_element_located(
+            (By.XPATH, '//div[@id="ID-reportLoading"]'))
+        )
+
     def run(self, login, password, counter, start_date, end_date, segment_name):
         os.mkdir(self.result_dir)
+
         self.browser.implicitly_wait(1)
         self.browser.get('https://accounts.google.com')
         self.browser.find_element_by_id('Email').send_keys(login + Keys.ENTER)
         self.browser.find_element_by_id('Passwd').send_keys(password + Keys.ENTER)
+
+        # возможно тут стоит поставить ожидание какого либо элемента. пока не ясно какого
         time.sleep(2)
+
         try:
             self.browser.find_element_by_xpath(u"//h1[@class='redtext' and contains(text(), "
                                                u"'В настоящее время обработать запрос невозможно')]")
@@ -51,15 +61,20 @@ class GAScreenMaker(SeleniumTask):
         self.browser.get('https://www.google.com/analytics/web')
         WebDriverWait(self.browser, 30).until(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, "ID-viewList"))).click()  # режим списка
+
         # заходим в нужный профиль
         self.browser.find_element_by_xpath("//a[contains(@href, 'p{}/')]".format(counter)).click()
+
+        # возможно тут стоит поставить ожидание какого либо элемента. пока не ясно какого
         time.sleep(3)
+
         # перейти в каналы
         profile_url_id = re.search('/(a\d+w\d+p\d+)/$', self.browser.current_url).group(1)
         self.browser.get('https://www.google.com/analytics/web/#report/acquisition-channels/' + profile_url_id)
         WebDriverWait(self.browser, 30).until(expected_conditions.visibility_of_element_located(
             (By.XPATH, "//span[contains(text(), 'Organic Search')]"))).click()
-        time.sleep(3)
+
+        time.sleep(3)  # лишь для иллюзии человека
 
         self.__activate_date_panel()
         date_start_input = self.browser.find_element_by_class_name('ID-datecontrol-primary-start')
@@ -69,8 +84,7 @@ class GAScreenMaker(SeleniumTask):
         date_end_input.clear()
         date_end_input.send_keys(get_ga_date(end_date))
         self.browser.find_element_by_class_name('ACTION-apply').click()
-
-        time.sleep(6)
+        self.__wait_report_loading()
 
         self.remove_element_by_id('ID-newKennedyHeader')
         self.remove_element_by_id('ID-navPanelContainer')
@@ -88,33 +102,31 @@ class GAScreenMaker(SeleniumTask):
         self.browser.find_element_by_class_name('ID-date_compare_mode').click()
         self.select_comparison('previousperiod')
         self.browser.set_window_size(1500, 890)
-        time.sleep(6)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'month_comparison.png'))
 
         # меняем сравнение графиков на год
         self.__activate_date_panel()
         self.select_comparison('previousyear')
-        time.sleep(6)
         self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
 
         if segment_name is not None:
             self.__activate_date_panel()
             self.browser.find_element_by_class_name('ID-date_compare_mode').click()
             self.browser.find_element_by_class_name('ACTION-apply').click()
-            time.sleep(3)
+            self.__wait_report_loading()
             self.browser.find_element_by_class_name('ACTION-selectSegments').click()
-            time.sleep(3)
+            self.__wait_report_loading()
             self.browser.find_element_by_xpath("//label[text()='Все сеансы']/../div/input").click()
-            time.sleep(3)
+            self.__wait_report_loading()
             try:
                 segment_input = self.browser.find_element_by_xpath("//label[text()='{}']/../div/input".format(segment_name))
             except NoSuchElementException:
                 raise GAScreenMakerException("Not found segment: %s" % segment_name)
             segment_input.click()
 
-            time.sleep(3)
+            self.__wait_report_loading()
             self.browser.find_element_by_xpath("//div[@id='ID-reportHeader-segmentPicker']//input[@value='Применить']").click()
-            time.sleep(6)
+            self.__wait_report_loading()
             self.browser.save_screenshot(os.path.join(self.result_dir, 'segment.png'))
 
 
