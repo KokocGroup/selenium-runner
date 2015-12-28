@@ -116,6 +116,9 @@ class GAScreenMaker(SeleniumTask):
         self.remove_elements_by_class('_GABxb')  # дата создания
         self.remove_element_by_id('ID-footerPanel')
 
+        self.browser.set_window_size(1400, 870)
+        self.browser.save_screenshot(os.path.join(self.result_dir, 'organic.png'))
+
         if segments_ids is not None:
             is_first = True
             for segment_id in segments_ids:
@@ -138,8 +141,6 @@ class GAScreenMaker(SeleniumTask):
                 segment_input = self.__get_segment_input(segment_id)
                 segment_input.click()
         else:
-            self.browser.set_window_size(1400, 870)
-            self.browser.save_screenshot(os.path.join(self.result_dir, 'organic.png'))
 
             # меняем сравнение графиков на месяц
             self.__activate_date_panel()
