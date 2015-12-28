@@ -40,7 +40,29 @@ class GAScreenMaker(SeleniumTask):
             (By.XPATH, '//div[@id="ID-reportLoading"]'))
         )
 
-    def run(self, login, password, counter, start_date, end_date, segment_name):
+    def __open_segments_list(self):
+        self.browser.find_element_by_class_name('ACTION-selectSegments').click()
+        self.__wait_report_loading()
+
+    def __get_segment_input(self, segment_id):
+        sid = segment_id.split("::")[1]
+        if len(sid) <= 5:
+            sid = 'builtin{0}'.format(abs(int(sid)))
+        else:
+            sid = 'user{0}'.format(sid)
+        class_name = "ID-list-check-{0}".format(sid)
+
+        try:
+            segment_input = self.browser.find_element_by_class_name(class_name)
+        except NoSuchElementException:
+            raise GAScreenMakerException("Not found segment: %s" % segment_id)
+        return segment_input
+
+    def run(self, login, password, counter, start_date, end_date, segments):
+
+        # self.display = True
+        segments_ids = segments.split(",") if segments is not None else None
+
         os.mkdir(self.result_dir)
 
         self.browser.implicitly_wait(1)
@@ -94,40 +116,42 @@ class GAScreenMaker(SeleniumTask):
         self.remove_elements_by_class('_GABxb')  # дата создания
         self.remove_element_by_id('ID-footerPanel')
 
-        self.browser.set_window_size(1400, 870)
-        self.browser.save_screenshot(os.path.join(self.result_dir, 'organic.png'))
+        if segments_ids is not None:
+            is_first = True
+            for segment_id in segments_ids:
 
-        # меняем сравнение графиков на месяц
-        self.__activate_date_panel()
-        self.browser.find_element_by_class_name('ID-date_compare_mode').click()
-        self.select_comparison('previousperiod')
-        self.browser.set_window_size(1500, 890)
-        self.browser.save_screenshot(os.path.join(self.result_dir, 'month_comparison.png'))
+                if is_first:
+                    self.__open_segments_list()
+                    self.browser.find_element_by_xpath("//label[text()='Все сеансы']/../div/input").click()
+                    self.__wait_report_loading()
+                    is_first = False
 
-        # меняем сравнение графиков на год
-        self.__activate_date_panel()
-        self.select_comparison('previousyear')
-        self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
+                segment_input = self.__get_segment_input(segment_id)
+                segment_input.click()
+                self.__wait_report_loading()
+                self.browser.find_element_by_xpath("//div[@id='ID-reportHeader-segmentPicker']//input[@value='Применить']").click()
+                self.__wait_report_loading()
+                self.browser.set_window_size(1400, 870)
+                self.browser.save_screenshot(os.path.join(self.result_dir, '{0}.png'.format(segment_id)))
 
-        if segment_name is not None:
+                self.__open_segments_list()
+                segment_input = self.__get_segment_input(segment_id)
+                segment_input.click()
+        else:
+            self.browser.set_window_size(1400, 870)
+            self.browser.save_screenshot(os.path.join(self.result_dir, 'organic.png'))
+
+            # меняем сравнение графиков на месяц
             self.__activate_date_panel()
             self.browser.find_element_by_class_name('ID-date_compare_mode').click()
-            self.browser.find_element_by_class_name('ACTION-apply').click()
-            self.__wait_report_loading()
-            self.browser.find_element_by_class_name('ACTION-selectSegments').click()
-            self.__wait_report_loading()
-            self.browser.find_element_by_xpath("//label[text()='Все сеансы']/../div/input").click()
-            self.__wait_report_loading()
-            try:
-                segment_input = self.browser.find_element_by_xpath("//label[text()='{}']/../div/input".format(segment_name))
-            except NoSuchElementException:
-                raise GAScreenMakerException("Not found segment: %s" % segment_name)
-            segment_input.click()
+            self.select_comparison('previousperiod')
+            self.browser.set_window_size(1500, 890)
+            self.browser.save_screenshot(os.path.join(self.result_dir, 'month_comparison.png'))
 
-            self.__wait_report_loading()
-            self.browser.find_element_by_xpath("//div[@id='ID-reportHeader-segmentPicker']//input[@value='Применить']").click()
-            self.__wait_report_loading()
-            self.browser.save_screenshot(os.path.join(self.result_dir, 'segment.png'))
+            # меняем сравнение графиков на год
+            self.__activate_date_panel()
+            self.select_comparison('previousyear')
+            self.browser.save_screenshot(os.path.join(self.result_dir, 'year_comparison.png'))
 
 
 def get_ga_date(d):

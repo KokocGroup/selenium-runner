@@ -14,7 +14,7 @@ parser.add_argument('password', required=True)
 parser.add_argument('start_date', type=valid_date, required=True)
 parser.add_argument('end_date', type=valid_date, required=True)
 parser.add_argument('counter', required=True)
-parser.add_argument('segment_name')
+parser.add_argument('segments')
 
 
 class Task(Resource):
